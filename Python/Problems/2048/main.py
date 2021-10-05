@@ -1,6 +1,11 @@
 import numpy
 import random
 import copy
+import keyboard
+import sys
+
+sys.setrecursionlimit(30000)
+numpy.set_printoptions(suppress=True)
 
 #generates a numpy array according to the rules of 2048
 def genBoard():
@@ -146,11 +151,14 @@ def getMove(board, direction):
 
 
 #simple solve algorithim that moves pieces systematically
-def simpleBoardSolve(board):
+def simpleSolve(board):
+
   while True:
+
     print(getMove(board,0))
     print(getMove(board,1))
     print(getMove(board,3))
+
     if isGameEnd(board):
       print("Game Over")
       return
@@ -176,10 +184,11 @@ def betterSolve(board, recurCounter=0):
   
   return betterSolve(biggestArr, recurCounter+1)
 
+#base idea is to iterate through all possiblilities until one with 2048 is found
 def bestSolve(board, curMax=0):
-  print(board)
 
-  if curMax == 2048:
+  #if current max is at target return the board
+  if curMax >= 8192:
     return board
 
   print(board)
@@ -189,12 +198,39 @@ def bestSolve(board, curMax=0):
   for move in moves:
     newBoard = getMove(copy.deepcopy(board), move)
 
+    #both conditionals avoid the end of the game
     if numpy.array_equal(newBoard, board):
       continue
+    
+    if isGameEnd(newBoard):
+      continue
 
-    return bestSolve(newBoard, numpy.amax(newBoard))
+    #sets a newboard equal to value when max > 2048 
+    newBoard = bestSolve(newBoard, numpy.amax(newBoard))
+    if numpy.amax(newBoard) >= 8192:
+      break
+  
+  return newBoard
 
     
+
+#allows user to play the game using 0123 keys
+def playerSolve(board):
+
+  while True:
+
+    try:
+      move = int(input("Move: "))
+    except:
+      continue
+
+    if move not in [0,1,2,3]:
+      continue
+        
+    print(getMove(board, move))
+
+    if isGameEnd(board):
+      print("Game Over")
 
 
 
@@ -202,6 +238,4 @@ def bestSolve(board, curMax=0):
 
 #generate board
 board = genBoard()
-
-bestSolve(board)
-
+print(bestSolve(board))
