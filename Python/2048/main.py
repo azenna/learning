@@ -232,6 +232,28 @@ def playerSolve(board):
     if isGameEnd(board):
       print("Game Over")
 
+#random brute force solve?
+def worstSolve(board):
+
+  moves = [0,1,2,3]
+  usableBoard = numpy.zeros((4,4))
+
+  while numpy.amax(usableBoard) < 512:
+    usableBoard = copy.deepcopy(board)
+
+    while True:
+
+      move = random.choice(moves)
+
+      getMove(usableBoard, move)
+      print(usableBoard)
+
+      if isGameEnd(usableBoard):
+        break
+  
+  return usableBoard
+  
+
 
 
 
