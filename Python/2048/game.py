@@ -1,8 +1,8 @@
 import numpy
 import random
 import copy
-import keyboard
 import sys
+
 
 sys.setrecursionlimit(30000)
 numpy.set_printoptions(suppress=True)
@@ -185,16 +185,17 @@ def betterSolve(board, recurCounter=0):
   return betterSolve(biggestArr, recurCounter+1)
 
 #base idea is to iterate through all possiblilities until one with 2048 is found
+boardStates = []
+boardMoves = []
 def bestSolve(board, curMax=0):
 
   #if current max is at target return the board
-  if curMax >= 8192:
+  if curMax >= 2048:
     return board
-
-  print(board)
 
   moves = [0,1,2,3]
 
+  #starting point for state lists
   for move in moves:
     newBoard = getMove(copy.deepcopy(board), move)
 
@@ -207,7 +208,10 @@ def bestSolve(board, curMax=0):
 
     #sets a newboard equal to value when max > 2048 
     newBoard = bestSolve(newBoard, numpy.amax(newBoard))
-    if numpy.amax(newBoard) >= 8192:
+
+    if numpy.amax(newBoard) >= 2048:
+      boardStates.append(board)
+      boardMoves.append(move)
       break
   
   return newBoard
@@ -232,10 +236,23 @@ def playerSolve(board):
     if isGameEnd(board):
       print("Game Over")
 
+#random brute force solve?
+def worstSolve(board):
 
+  moves = [0,1,2,3]
+  usableBoard = numpy.zeros((4,4))
 
+  while numpy.amax(usableBoard) < 512:
+    usableBoard = copy.deepcopy(board)
 
+    while True:
 
-#generate board
-board = genBoard()
-print(bestSolve(board))
+      move = random.choice(moves)
+
+      getMove(usableBoard, move)
+      print(usableBoard)
+
+      if isGameEnd(usableBoard):
+        break
+  
+  return usableBoard
