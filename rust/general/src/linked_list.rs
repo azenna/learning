@@ -26,15 +26,4 @@ impl Node {
             None => println!("{}", self.data)
         }
     }
-    pub fn pop(self, n:u32){
-        if n > (&self).count(){
-            panic!("Index out of Range")
-        }
-        let mut cur = self;
-        for _i in 0..n{
-            if let Some(next) = cur.next{
-                cur = *next;
-            }
-        }
-    }
 }
