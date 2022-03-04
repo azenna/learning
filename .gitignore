@@ -1,4 +1,4 @@
 .vscode/
 *.exe
 *.out
-Rust/*/src/target
+**/target/
