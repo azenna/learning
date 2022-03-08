@@ -7,5 +7,6 @@ mod error_handling;
 
 fn main() {
 
-    error_handling::error_handling("crash and burn");
+    let s = error_handling::error_handling().expect("failed to read string");
+    println!("{}", s);
 }
