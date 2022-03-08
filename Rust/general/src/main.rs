@@ -1,12 +1,7 @@
-mod rectangle;
-mod ip_address;
-mod fibonacci_match;
-mod linked_list;
-mod hash_map;
-mod error_handling;
+mod chapter_ten;
 
 fn main() {
 
-    let s = error_handling::error_handling().expect("failed to read string");
-    println!("{}", s);
+    chapter_ten::ten_main();
+    
 }
