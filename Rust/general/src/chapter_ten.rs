@@ -16,40 +16,44 @@ pub fn ten_main(){
 
     push_notification(&vid);
     push_notification(&news_art);
+
+    let vec = vec![19.1, 20.2, 30.3];
+    println!("{}", largest_num(&vec));
     
 }
 
 //extract largest number functionality and put into a function
-pub fn largest_num(list: &[i32]) -> i32{
-    let mut largest: i32 = list[0];
+//yay it's generic now
+pub fn largest_num<T: std::cmp::PartialOrd>(list: &[T]) -> &T{
+    let mut largest = &list[0];
 
     for num in list{
-        if *num > largest{
-            largest = *num;
+        if num > largest{
+            largest = num;
         }
     }
 
     largest
 }
 
-struct Point<T, U>{
+struct Point<T>{
     x: T,
-    y: U,
+    y: T,
 }
 
-impl<T, U> Point<T, U>{
-    fn contents(&self) -> (&T, &U){
+impl<T> Point<T>{
+    fn contents(&self) -> (&T, &T){
         (&self.x, &self.y)
     }
 }
 
-impl Point<i32, i32>{
+impl Point<i32>{
     fn multiply(&self) -> i32{
         self.x * self.y
     }
 }
 
-impl Point<&str, &str>{
+impl Point<&str>{
     fn concat(&self) -> String{
         String::from(self.x) + self.y
     }
@@ -92,3 +96,8 @@ impl Summary for Video {
 fn push_notification(item: &impl Summary){
     println!("one new notification: {}", item.summarize());
 }
+
+//could also be written as
+// fn push_notification<T: Summary>(item: &T){
+//     println!("One new notification: {}", item.summarize());
+// }
