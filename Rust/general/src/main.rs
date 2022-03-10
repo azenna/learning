@@ -1,7 +1,7 @@
-mod chapter_ten;
+mod lifetimes;
 
 fn main() {
-
-    chapter_ten::ten_main();
+    let book = lifetimes::Book {title: "Where?", body: "lorum ipsum dolor"};
+    println!("{}", book.length());
     
 }
