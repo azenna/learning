@@ -1,5 +1,3 @@
-mod closures;
+mod iterators;
 
-fn main() {
-    closures::capture_environment_example();
-}
+fn main() {}
