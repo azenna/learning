@@ -1,7 +1,5 @@
-mod lifetimes;
+mod closures;
 
 fn main() {
-    let book = lifetimes::Book {title: "Where?", body: "lorum ipsum dolor"};
-    println!("{}", book.length());
-    
+    closures::capture_environment_example();
 }
