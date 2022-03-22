@@ -1,14 +1,23 @@
-mod smart_pointers;
-use smart_pointers::List::*;
-use std::rc::Rc;
+mod memory_leaks;
+use memory_leaks::*;
+use std::rc::{Rc, Weak};
+use std::cell::RefCell;
 
 fn main() {
     
-    let list_a = Rc::new(Cons(1, Rc::new(Cons(1, Rc::new(Cons(1, Rc::new(Cons(1, Rc::new(Nil)))))))));
-    let list_b = Cons(2, Rc::clone(&list_a));
-    {
-        let list_c = Cons(3, Rc::clone(&list_a));
-        println!("Rc count a: {}", Rc::strong_count(&list_a));
-    }
-    println!("Rc count a: {}", Rc::strong_count(&list_a));
+    let leaf = Rc::new( Node {
+        data: 10,
+        children: RefCell::new(Vec::new()),
+        parent: RefCell::new(Weak::new()),
+    });
+
+    let branch = Rc::new( Node{
+        data: 5,
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+        parent: RefCell::new(Weak::new()),
+    });
+
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
 }
