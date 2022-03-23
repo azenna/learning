@@ -1,23 +1,23 @@
-mod memory_leaks;
-use memory_leaks::*;
-use std::rc::{Rc, Weak};
-use std::cell::RefCell;
+use std::thread;
+use std::sync::mpsc;
+use std::time::Duration;
 
 fn main() {
     
-    let leaf = Rc::new( Node {
-        data: 10,
-        children: RefCell::new(Vec::new()),
-        parent: RefCell::new(Weak::new()),
+    let (tx, rx) = mpsc::channel();
+
+    let tx1 = tx.clone();
+
+    thread::spawn(move || {
+        tx.send("hello there").unwrap();
     });
 
-    let branch = Rc::new( Node{
-        data: 5,
-        children: RefCell::new(vec![Rc::clone(&leaf)]),
-        parent: RefCell::new(Weak::new()),
+    thread::spawn(move || {
+        tx1.send("how are you today").unwrap();
     });
 
-    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+    for rec in rx{
+        println!("got: {}", rec);
+    }
 
-    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
 }
