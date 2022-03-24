@@ -1,23 +1,12 @@
-use std::thread;
-use std::sync::mpsc;
-use std::time::Duration;
+mod oop;
+use oop::*;
 
 fn main() {
-    
-    let (tx, rx) = mpsc::channel();
+    let mut avg_col = AveragedCollection::new(vec![1, 2, 3, 4]);
 
-    let tx1 = tx.clone();
+    println!("{}", avg_col.average());
 
-    thread::spawn(move || {
-        tx.send("hello there").unwrap();
-    });
+    avg_col.add(100);
 
-    thread::spawn(move || {
-        tx1.send("how are you today").unwrap();
-    });
-
-    for rec in rx{
-        println!("got: {}", rec);
-    }
-
+    println!("{}", avg_col.average());
 }
