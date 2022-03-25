@@ -1,6 +1,5 @@
 mod pattern_matching;
 
 fn main() {
-    
-    pattern_matching::example(&(10, 5));
+    pattern_matching::pattern_syntax();
 }
