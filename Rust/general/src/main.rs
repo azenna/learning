@@ -1,5 +1,5 @@
-mod advanced_traits;
+mod advanced_functions_and_closures;
 
 fn main() {
-    advanced_traits::wrapper_ex();
+    println!("{}", advanced_functions_and_closures::syracuse_problem(11));
 }
