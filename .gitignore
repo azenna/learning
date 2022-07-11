@@ -1,4 +1,5 @@
 .vscode/
 *.exe
 *.out
-**/target/
+**/target/*
+*.swp
