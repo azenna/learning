@@ -109,3 +109,21 @@
 		1
 		(+ (pascal (- row 1) col) (pascal (- row 1) (- col 1)))))
 
+(define (sine_approximation x)
+  (if (< (abs x) .01) x
+      (- (* 3 (sine_approximation (/ x 3.0))) (* 4 (expt (sine_approximation (/ x 3.0)) 3)))))
+
+(define (fast_expt b o n)
+  (cond ((= n 1) b)
+        ((not (= 0 (remainder n 2))) (fast_expt (* b o) (- n 1)))
+        (else (fast_expt (* b b) (/ n 2)))))
+
+(define (exptt b n)
+  (fast_eppt b b n))
+
+(define (multiply a b)
+  (cond ((= b 1) a)
+        ((not (= 0 (remainder b 2))) (+ a (multiply a (- b 1)))) 
+	(else (multiply (* a 2) (/ b 2)))))
+
+        
