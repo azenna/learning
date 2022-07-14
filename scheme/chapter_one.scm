@@ -264,4 +264,53 @@
       1
       (* (term a) (product (next a) b term next))))
 
+(define (product_iter a b term next accumulated)
+  (if (> a b)
+      accumulated
+      (product_iter (next a) b term next (* accumulated (term a)))))
+
 (define (factorial b) (product 1 b + (lambda (x) (+ x 1)))) 
+
+(define (pi_prod_approx n)
+  (* (/ (* 4 (+ n 1)) (square 3)) (product_iter 2 n (lambda (x) (/ (square (* 2 x)) (square (+ 1 (* 2 x))))) inc 1) 4.0))
+
+(define (accumulate combiner last a b term next)
+  (if (> a b)
+      last
+      (combiner (term a) (accumulate combiner last (next a) b term next))))
+
+(define (sum a b term next) (accumulate (lambda (a b) (+ a b)) 0 a b term next))
+(define (prod a b term next) (accumulate * 1 a b term next))
+
+(define (accumulate_iter combiner a b term next accumulated)
+  (if (> a b)
+      accumulated
+      (accumulate_iter combiner (next a) b term next (combiner accumulated (term a)))))
+
+(define (sum_iter a b term next) (accumulate_iter + a b term next 0))
+
+(define (sum_iter_ints a b) (sum_iter a b + (lambda (x) (+ x 1))))
+
+(define (filter_accumulate combiner last a b term next filter)
+  (cond ((> a b) last)
+        ((filter a)
+         (combiner (term a) (filter_accumulate combiner last (next a) b term next filter)))
+        (else
+         (filter_accumulate combiner last (next a) b term next filter))))
+
+(define (sum_squares_prime a b)
+  (filter_accumulate + 0 a b square inc is_prime))
+
+(define (ex_133 n)
+  (filter_accumulate + 0 1 n + inc (lambda (x) (= 1 (greatest_common_divisor x n)))))
+
+(define (close_enough x y) (< (abs (- x y)) .0001))
+(define (fixed_point f first_guess)
+  (let ((next (f first_guess)))
+
+  (if (close_enough first_guess next)
+      first_guess
+      (fixed_point f next))))
+
+(define golden_ratio (fixed_point (lambda (x) (+ 1 (/ 1 x))) 1.0))
+
