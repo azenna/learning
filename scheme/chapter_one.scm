@@ -337,3 +337,50 @@
 
 (define (tan_cf x k)
   (/ x (+ 1 (cont_frac_iter (lambda (_) (* x x -1)) (lambda (i) (+ 1 (* 2 i))) k 0.0))))
+
+(define dx .00001)
+(define (derive f)
+  (lambda (x)
+    (/ (- (f (+ x dx)) (f x)) dx)
+  ))
+
+(define x2_deriv (derive square))
+
+(define (newtons_transform f)
+  (lambda (x)
+    (- x (/ (f x) ((derive f) x)))))
+
+(define (newtons_method f guess)
+  (fixed_point (newtons_transform f) guess))
+
+(define (cubic a b c)
+  (lambda (x)
+    (+ (* x x x) (* a x x) (* b x) c)))
+
+(define (double f) (lambda (x) (f (f x))))
+
+(define (compose f g) (lambda (x) (f (g x))))
+
+(define (repeated f n)
+  (if (= 1 n)
+      f
+      (compose f (repeated f (- n 1)))))
+
+(define (smooth f)
+  (lambda (x) (/ (+ (f x) (f (+ x dx))) 2)))
+
+(define (average_damp f) (lambda (x) (/ (+ x (f x)) 2.0)))
+
+(define (nth_root n f x)
+  (fixed_point ((repeated average_damp d) (lambda (y) (/ x (fast_expt y (- n 1))))) 1.0))
+
+(define (iterative_improve improve)
+  (define (iter guess)
+    (if (close_enough guess (improve guess))
+        guess
+        (iter (improve guess))))
+  iter)
+  
+
+(define (sqrt x) ((iterative_improve (average_damp (lambda (y) (/ x y)))) 1.0) )
+(define (fixed_point f guess) ((iterative_improve (average_damp f)) guess))
