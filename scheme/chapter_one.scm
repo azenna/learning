@@ -306,7 +306,9 @@
 
 (define (close_enough x y) (< (abs (- x y)) .0001))
 (define (fixed_point f first_guess)
-  (let ((next (f first_guess)))
+  (display first_guess)
+  (newline)
+  (let ((next (/ (+ first_guess (f first_guess)) 2)))
 
   (if (close_enough first_guess next)
       first_guess
@@ -314,3 +316,24 @@
 
 (define golden_ratio (fixed_point (lambda (x) (+ 1 (/ 1 x))) 1.0))
 
+(define (cont_frac n d k)
+  (if (= k 1)
+      (/ (n k) (d k))
+      (/ (n k) (+ (d k) (cont_frac n d (- k 1))))))
+
+(define (cont_frac_iter n d k acc)
+  (if (= k 0)
+      acc
+      (cont_frac_iter n d (- k 1) (/ (n k) (+ (d k) acc)))))
+
+(define (one x) 1.0)
+
+(define (eulers_expansion n)
+  (define (next_d i)
+    (if (= 0 (remainder (- i 1) 3))
+        (* 2 (+ 1 (/ (- i 1) 3)))
+        1))
+  (/ 1 (+ 1 (cont_frac_iter one next_d n 0.0))))
+
+(define (tan_cf x k)
+  (/ x (+ 1 (cont_frac_iter (lambda (_) (* x x -1)) (lambda (i) (+ 1 (* 2 i))) k 0.0))))
