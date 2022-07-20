@@ -384,3 +384,4 @@
 
 (define (sqrt x) ((iterative_improve (average_damp (lambda (y) (/ x y)))) 1.0) )
 (define (fixed_point f guess) ((iterative_improve (average_damp f)) guess))
+q
