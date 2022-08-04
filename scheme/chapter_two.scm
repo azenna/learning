@@ -80,18 +80,90 @@
 (define (acdr c) (c (lambda (x y) y)))
 
 (define (bcons x y)
-  (l))
+  (* (expt 2 x) (expt 3 y)))
 
+(define (bcar c)
+  (define (car n c2)
+    (if (= 0 (remainder c2 2))
+        (car (+ n 1) (/ c2 2))
+        n))
+  (car 0 c))
+
+(define (bcdr c)
+  (define (cdr n c2)
+    (if (= 0 (remainder c2 3))
+        (cdr (+ n 1) (/ c2 3))
+        n))
+  (cdr 0 c))
+
+(define zero (lambda (f) (lambda (x) x)))
+(define one (lambda (f) (lambda (x) (f x))))
+(define two (lambda (f) (lambda (x) (f (f x)))))
+
+(define (add_one n) (lambda (f) (lambda (x) (f ((n f) x)))))
+
+(define (addition n1 n2)
+  (lambda (f) (lambda (x) ((n1 f) ((n2 f) x)))))
+
+(define three (addition one two))
+
+(define (inc x) ( + x 1))
+(define zero_inc (zero inc))
+(define (one_inc x) (((add_one zero) inc) x))
+
+(define (make_interval a b) (cons a b))
+(define low car)
+(define high cdr)
+
+(define (sub_interval in1 in2)
+  (make_interval (- (low in2) (low in1)) (- (high in2) (high in1))))
+
+
+(define (add_interval x y)
+  (make_interval (+ ( low x) ( low y) )
+  (+ (high x) (high y) )))
+
+
+(define (mul_interval x y)
+  (let ((p1 (* (low x) (low y)))
+       (p2 (* (low x) (high y)))
+       (p3 (* (high x) (low y)))
+       (p4 (* (high x) (high y))))`
+  (make_interval (min p1 p2 p3 p4)
+                 (max p1 p2 p3 p4))))
+
+
+(define (div_interval x y)
+(if (<= 0 (* (low y) (high y))) 
+       (error "Division error (interval spans 0)" y) 
+       (mul_interval x  
+                     (make-interval (/ 1. (high y)) 
+                                    (/ 1. (low y))))))
+(define (make_center_percent c p)
+  (let ((cp (* c p)))
+       (make_interval (- c cp) (+ c cp))
+  )
+)
+
+(define (center in)
+  (/ (+ (low in) (high in)) 2.0)
+)
+
+(define (tolerance in)
+  (/ (center in) (- (high in) (center in)))
+)
+                            
+                  
 (define (tests)
   (define rect1 (rectangle (make_point 1 1) (make_point 5 5)))
-  (print (perimeter rect1))
-  (print (perimeter rect1))
   (define rect2 (make_rect2 (make_line (make_point 1 1) (make_point 1 5)) (make_line (make_point 1 1) (make_point 5 1))))
-  (print (perimeter2 rect2))
-  (print (area2 rect2)))
   (define my_cons (acons 5 6))
-  (print (acar my_cons))
-
+  (define bcon (bcons 3 4))
+  (define in1 (make_interval 7 9))
+  (define in2 (make_interval 12 15))
+  (define cp (make_center_percent 10 .2))
+  (define tol (tolerance cp))
+  (print tol))
 (tests)
 
 
