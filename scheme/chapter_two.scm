@@ -150,20 +150,39 @@
 )
 
 (define (tolerance in)
-  (/ (center in) (- (high in) (center in)))
+  (/ (- (high in) (center in)) (center in))
 )
+
+(define (last_pair l)
+  (if (null? (cdr l))
+    l
+    (last_pair (cdr l))
+  )
+)
+
+(define (reverse_list lis)
+  (define (iter l acc)
+    (print acc)
+    (if (null? (cdr l))
+      (cons (car l) acc)
+      (iter (cdr l) (cons (car l) acc))
+    )
+  )
+  (iter lis ())
+)
+
+
+(define (count_coins amount coins)
+  (cond ((= amount 0) 1)
+	((or (< amount 0) (null? coins)) 0)
+	(else (+ (count_coins (- amount (car coins)) coins)
+	      (count_coins amount (cdr coins))))))
                             
                   
 (define (tests)
-  (define rect1 (rectangle (make_point 1 1) (make_point 5 5)))
-  (define rect2 (make_rect2 (make_line (make_point 1 1) (make_point 1 5)) (make_line (make_point 1 1) (make_point 5 1))))
-  (define my_cons (acons 5 6))
-  (define bcon (bcons 3 4))
-  (define in1 (make_interval 7 9))
-  (define in2 (make_interval 12 15))
-  (define cp (make_center_percent 10 .2))
-  (define tol (tolerance cp))
-  (print tol))
+  (define us_coins (list 50 25 10 5 1))
+  (define uk_coins (list 50 20 10 5 2 1 .5))
+  (print (count_coins 100 uk_coins)))
 (tests)
 
 
