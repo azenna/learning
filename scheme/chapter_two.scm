@@ -178,11 +178,18 @@
 	(else (+ (count_coins (- amount (car coins)) coins)
 	      (count_coins amount (cdr coins))))))
                             
-                  
+(define (even_odd x) (remainder x 2))
+
+(define (same_parity . x)
+  (define (recur y)
+    (cond ((null? y) y)
+	  ((= (even_odd (car y)) (even_odd (car x)))
+	   (cons (car y) (recur (cdr y))))
+	  (else (recur (cdr y)))))
+  (recur x))
+
 (define (tests)
-  (define us_coins (list 50 25 10 5 1))
-  (define uk_coins (list 50 20 10 5 2 1 .5))
-  (print (count_coins 100 uk_coins)))
+  (print (same_parity 1 2 3 4 5 6 7 8 9)))
 (tests)
 
 
