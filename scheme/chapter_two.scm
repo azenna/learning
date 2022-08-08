@@ -244,16 +244,37 @@
 	          (* (branch_torque left)))
 	       (and (is_mobile_balanced (branch_structure right)) (is_mobile_balanced (branch_structure left)))
 	       #f))))
-        
-        
-	
+
+; questions that help me with recursion; 1. how do I traverse, 2. what is the smallest unit I will reach by traversal       
+(define (square_tree t)
+  (cond ((null? t) ())
+	((not (pair? t)) (square t))
+	(else (cons (square_tree (car t)) (square_tree (cdr t))))))
+
+; map provides what seems to be an iterative approach for tree recursion
+; what I think the clever part about this is is that map does your traversal for you
+(define (square_tree_map t)
+  (cond ((null? t) ())
+	((not (pair? t)) (square t))
+	(else (map square_tree t))))
+
+(define (tree_map f t)
+  (define (iter t)
+    (cond ((null? t) ())
+	  ((not (pair? t)) (f t))
+	  (else (map iter t))))
+  (iter t))
+
+; don't quite grok this
+(define (subsets s) 
+  (if (null? s) 
+      (list ())   ;; initially had nil, always got () back! 
+      (let ((rest (subsets (cdr s)))) 
+           (append rest (map (lambda (x) (cons (car s) x)) rest)))))
+
 (define (tests)
-  (define small_branch (make_branch 1 1))
-  (define large_branch (make_branch 2 2))
-  (define mobile (make_mobile small_branch large_branch))
-  (define branchy_branch (make_branch 1 mobile))
-  (define branch_mobile (make_mobile small_branch branchy_branch))
-  (print (is_mobile_balanced (make_mobile small_branch small_branch))))
+  (define tree (list 1 2 3 (list 8 7 (list 5 6)) 4 (list 9 10 11 12)))
+  (print (tree_map square tree)))
 (tests)
 
 
