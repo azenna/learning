@@ -156,21 +156,22 @@
 (define (last_pair l)
   (if (null? (cdr l))
     l
-    (last_pair (cdr l))
-  )
-)
+    (last_pair (cdr l))))
+
 
 (define (reverse_list lis)
   (define (iter l acc)
-    (print acc)
     (if (null? (cdr l))
       (cons (car l) acc)
-      (iter (cdr l) (cons (car l) acc))
-    )
-  )
-  (iter lis ())
-)
+      (iter (cdr l) (cons (car l) acc))))
+  (iter lis ()))
 
+(define (deep_reverse l)
+  (if (not (pair? l))
+      l
+      (reverse_list (map deep_reverse l))))
+
+      
 
 (define (count_coins amount coins)
   (cond ((= amount 0) 1)
@@ -188,8 +189,71 @@
 	  (else (recur (cdr y)))))
   (recur x))
 
+(define (square x) (* x x))
+
+(define (square_list1 l)
+  (if (null? l)
+      ()
+      (cons (square (car l)) (square_list1 (cdr l)))))
+
+(define (square_list2 l)
+  (map square l))
+
+(define (for_each f l)
+  (if (not (null? l))
+      (f (car l)))
+  (if (null? l)
+      0
+      (for_each f (cdr l))))
+
+(define (fringe l)
+  (if (null? l)
+      ()
+      (if (pair? (car l))
+	  (append (fringe (car l)) (fringe (cdr l)))
+	  (cons (car l) (fringe (cdr l))))))
+
+(define (make_mobile left right)
+  (list left right))
+
+(define (make_branch length structure)
+  (list length structure))
+
+(define left_branch car)
+
+(define right_branch cadr)
+
+(define branch_length car)
+
+(define branch_structure cadr)
+
+(define (total_weight mobile)
+  (if (not (pair? mobile))
+      mobile
+      (+ (total_weight (branch_structure (left_branch mobile)))
+	 (total_weight (branch_structure (right_branch mobile))))))
+
+(define (branch_torque b) (* (branch_length b) (total_weight (branch_structure b))))
+
+(define (is_mobile_balanced mobile)
+  (if (not (pair? mobile))
+      #t
+      (let ((left (left_branch mobile))
+            (right (right_branch mobile)))
+           (if (= (* (branch_torque right))
+	          (* (branch_torque left)))
+	       (and (is_mobile_balanced (branch_structure right)) (is_mobile_balanced (branch_structure left)))
+	       #f))))
+        
+        
+	
 (define (tests)
-  (print (same_parity 1 2 3 4 5 6 7 8 9)))
+  (define small_branch (make_branch 1 1))
+  (define large_branch (make_branch 2 2))
+  (define mobile (make_mobile small_branch large_branch))
+  (define branchy_branch (make_branch 1 mobile))
+  (define branch_mobile (make_mobile small_branch branchy_branch))
+  (print (is_mobile_balanced (make_mobile small_branch small_branch))))
 (tests)
 
 
