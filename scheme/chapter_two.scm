@@ -272,11 +272,11 @@
       (let ((rest (subsets (cdr s)))) 
            (append rest (map (lambda (x) (cons (car s) x)) rest)))))
 
-(define (accumulate inital op sequence)
+(define (accumulate op initial sequence)
   (if (null? sequence)
-	   inital
+	   initial
 	   (op (car sequence)
-		   (accumulate inital op (cdr sequence)))))
+		   (accumulate op initial (cdr sequence)))))
 
 (define (filter predicate sequence)
   (cond ((null? sequence) sequence)
@@ -311,7 +311,32 @@
 		  (else 1)))
 	  tree)))
 
+;uses maps to traverse each sequence in a seq of seqs simultaneosly
+(define (accumulate_n op init seqs)
+  (if (null? (car seqs))
+	init
+	(cons (accumulate op init (map car seqs))
+		  (accumulate_n op init (map cdr seqs)))))
+
+(define (dot_product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix_times_vector m v)
+  (map (lambda (w) (accumulate 0 + (map * v w))) m))
+
+(define (transpose m)
+  (accumulate_n cons () m))
+
+;dot product of each row in m by each column in n
+(define (matrix_multiplication m n)
+  (let ((cols (transpose n)))
+	(map (lambda (row)
+	  (matrix_times_vector cols row))
+	m)))
+
+
 (define (tests)
-  (define tree (list 1 2 3 (list 8 7 (list 5 6)) 4 (list 9 10 11 12)))
-  (print (count_leaves tree)))
+  (define matrix (list (list 1 2 3 4) (list 5 6 7 8) (list 9 10 11 12)))
+  (define vec (list 1 1 1 1))
+  (print (transpose matrix)))
 (tests)
