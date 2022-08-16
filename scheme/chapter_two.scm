@@ -272,10 +272,46 @@
       (let ((rest (subsets (cdr s)))) 
            (append rest (map (lambda (x) (cons (car s) x)) rest)))))
 
+(define (accumulate inital op sequence)
+  (if (null? sequence)
+	   inital
+	   (op (car sequence)
+		   (accumulate inital op (cdr sequence)))))
+
+(define (filter predicate sequence)
+  (cond ((null? sequence) sequence)
+		((predicate (car sequence))
+		 (cons (car sequence)
+			   (filter predicate (cdr sequence))))
+		(else (filter predicate (cdr sequence)))))
+
+(define (ex_map f sequence)
+  (accumulate () (lambda (x y) (cons (f x) y)) sequence))
+
+(define (ex_append seq1 seq2)
+  (accumulate seq2 cons seq1))
+
+(define (ex_length sequence)
+  (accumulate 0 (lambda (x y) (+ 1 y)) sequence))
+
+
+(define (horner_eval x coeff_sequence)
+  (accumulate 0 (lambda (this_coeff higher_terms) (* x (+ this_coeff higher_terms)))
+    coeff_sequence))
+
+(define (count_leaves tree)
+  (accumulate
+	0
+    +
+	(map
+	  (lambda (t)
+		(cond
+		  ((pair? t) (count_leaves t))
+		  ((null? t) 0)
+		  (else 1)))
+	  tree)))
+
 (define (tests)
   (define tree (list 1 2 3 (list 8 7 (list 5 6)) 4 (list 9 10 11 12)))
-  (print (tree_map square tree)))
+  (print (count_leaves tree)))
 (tests)
-
-
-
