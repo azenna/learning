@@ -334,6 +334,18 @@
 	  (matrix_times_vector cols row))
 	m)))
 
+(define (fold_left op init seq)
+  (define (iter result rest)
+	(if (null? rest)
+	  result
+	  (iter (op result (car rest)) (cdr rest))))
+  (iter init seq))
+
+(define (reverse_acc seq)
+  (accumulate (lambda (x y) (append y (list x))) (list ()) seq))
+
+(define (reverse_fl seq)
+  (fold_left (lambda (x y) (cons y x)) () seq))
 
 (define (tests)
   (define matrix (list (list 1 2 3 4) (list 5 6 7 8) (list 9 10 11 12)))
