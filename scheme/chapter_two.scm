@@ -347,8 +347,64 @@
 (define (reverse_fl seq)
   (fold_left (lambda (x y) (cons y x)) () seq))
 
+(define (enumerate_interval l h)
+  (if (> l h)
+	()
+	(cons l (enumerate_interval (+ l 1) h))))
+
+(define (flatmap f seq)
+  (accumulate append () (map f seq)))
+
+(define (unique_pairs n)
+  (flatmap
+	(lambda (i)
+	  (map
+		(lambda (j) (list i j))
+	    (enumerate_interval 1 (- i 1)))) 
+    (enumerate_interval 1 n)))
+
+(define (prime? x)
+  (define (test y)
+	(cond
+	  ((> (* y y) x) #t)
+	  ((= 0 (remainder x y)) #f)
+	  (else (test (+ y 1)))))
+  (test 2))
+
+
+(define (make_pair_sum pair)
+  (let 
+	((a (car pair))
+	 (b (cadr pair)))
+	(list a b (+ a b))))
+
+(define (is_sum_prime pair)
+  (prime? (+ (car pair) (cadr pair))))
+
+(define (prime_sum_pairs n)
+  (map
+	make_pair_sum
+	(filter
+	  is_sum_prime
+	  (unique_pairs n))))
+
+(define (three_sums n s)
+  (let ((ival (enumerate_interval 1 n)))
+    (filter
+	  (lambda (trip)
+  	    (= s (+ (car trip) (cadr trip) (caddr trip))))
+  	  (flatmap
+  	    (lambda (i)
+	  	  (flatmap
+		    (lambda (j)
+			  (map
+			    (lambda (k) (list i j k))
+			    ival))
+		     ival))
+	     ival))))
+
 (define (tests)
   (define matrix (list (list 1 2 3 4) (list 5 6 7 8) (list 9 10 11 12)))
   (define vec (list 1 1 1 1))
-  (print (transpose matrix)))
+  (print (flatmap (lambda (x) x) matrix)))
 (tests)
