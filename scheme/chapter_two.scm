@@ -403,8 +403,41 @@
 		     ival))
 	     ival))))
 
+(define empty_board ())
+
+(define (adjoin_position x y board)
+  (cons (cons x y) board))
+
+(define (any? seq)
+  (cond ((null? seq) #f)
+		((car seq) #t)
+		(else (any? (cdr seq)))))
+
+(define (safe? k positions)
+  (let ((queenx (caar positions))
+		(queeny (cdar positions)))
+	(not (any? (map (lambda (pos)
+		   (let ((posx (car pos))
+				 (posy (cdr pos)))
+			 (or (= queenx posx)
+				 (= queeny posy)
+				 (= (abs (- queenx posx)) (abs (- queeny posy))))))
+		 (cdr positions))))))
+
+(define (queens board_size)
+  (define (queen_cols k)
+	(if (= k 0)
+	  (list empty_board)
+	  (filter
+		(lambda (positions) (safe? k positions))
+		(flatmap
+		  (lambda (rest_of_queens)
+			(map (lambda (new_row)
+				   (adjoin_position new_row k rest_of_queens))
+				 (enumerate_interval 1 board_size)))
+		  (queen_cols (- k 1))))))
+  (queen_cols board_size))
+
 (define (tests)
-  (define matrix (list (list 1 2 3 4) (list 5 6 7 8) (list 9 10 11 12)))
-  (define vec (list 1 1 1 1))
-  (print (flatmap (lambda (x) x) matrix)))
+  (print (queens 8)))
 (tests)
