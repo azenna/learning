@@ -455,6 +455,48 @@
 		  (queen_cols (- k 1))))))
   (queen_cols board_size))
 
+
+(define (up_split painter n)
+  (if (= n 0)
+	painter
+	(let ((smaller (up_split painter (- n 1))))
+	  (below (beside smaller smaller) painter))))
+
+(define (split f g)
+ (define (child painter n)
+   (if (= n 0)
+	 painter
+	 (let ((smaller (child painter (- n 1))))
+	   (f (g smaller smaller) painter))))
+ child)
+
+(define (make_vec x y)
+  (cons x y))
+
+(define vec_x car)
+(define vec_y cdr)
+
+(define (vec_op_elementwise op)
+  (lambda (v1 v2) (make_vec (op (vec_x v1) (vec_x v2)) (op (vec_y v1) (vec_y v2)))))
+
+(define vec_add (vec_op_elementwise +))
+(define vec_sub (vec_op_elementwise -))
+
+(define (vec_scale s vec)
+  (make_vec (* s (vec_x vec)) (* s (vec_y vec))))
+
+(define (make_frame ori edg1 edg2)
+  (cons ori (cons edg1 edg2)))
+
+(define frame_ori car)
+(define frame_edg1 cadr)
+(define frame_edg2 cddr)
+
+(define (make_segment v1 v2) (cons v1 v2))
+
+(define seg_start car)
+(define seg_end cdr)
+
 (define (tests)
   (print (queens 8)))
 (tests)
