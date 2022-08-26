@@ -4,7 +4,7 @@ import numpy
 numpy.set_printoptions(suppress=True)
 
 if __name__ == '__main__':
-  bestSolve(genBoard())
+  playerSolve(genBoard())
 
   for board in numpy.flipud(boardStates):
     print(board)
