@@ -497,6 +497,22 @@
 (define seg_start car)
 (define seg_end cdr)
 
+(define (make_seg_list vecs)
+  (define (recur in_vecs)
+	(if (null? in_vecs)
+	  (car vecs)
+	  (cons (make_vec (car in_vecs) (cadr in_vecs)) (recur (cdr in_vecs)))))
+  (recur vecs))
+
+(define (segments->painter l) ())
+
+(define outline
+  (segments->painter
+	(list 
+	  (make_segment (make_vec 0 0) (make_vec 0 1))
+      (make_segment (make_vec 0 1) (make_vec 1 1))
+	  (make_segment (make_vec 1 1) (make_vec 1 0)))))
+
 (define (tests)
   (print (queens 8)))
 (tests)
