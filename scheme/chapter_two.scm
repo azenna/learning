@@ -543,15 +543,9 @@
 (define (op_check op)
   (lambda (x) (and (pair? x) (eq? (car x) op))))
 
-
-(define (length x)
-  (if (null? x)
-	0
-	(+ 1 (length (cdr x)))))
-
 (define (sub_expr op)
   (lambda (x)
-	(if (= (length x) 3)
+	(if (null? (cdddr x))
 	  (caddr x)
 	  (cons op (cddr x)))))
 
