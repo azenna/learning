@@ -512,6 +512,83 @@
 	((not (eq? (car x) (car y))) #f)
 	(else (equal? (cdr x) (cdr y)))))
 
+(define variable? symbol?)
+
+(define (same_variable? v1 v2)
+  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+
+(define (=number? x y)
+  (and (number? x) (= x y)))
+
+(define (make_sum v1 v2)
+  (cond ((=number? v1 0) v2)
+		((=number? v2 0) v1)
+		((and (number? v1) (number? v2)) (+ v1 v2))
+		(else (list '+ v1 v2))))
+
+(define (make_product v1 v2)
+  (cond ((or (=number? v1 0) (=number? v2 0)) 0)
+		((=number? v1 1) v2)
+		((=number? v2 1) v1)
+		((and (number? v1) (number? v2)) (* v1 v2))
+		(else (list '* v1 v2))))
+
+(define (make_exp b e)
+  (cond ((and (number? b) (number? e)) (expt b e))
+		((=number? e 0) 1)
+		((=number? e 1) b)
+		((=number? b 0) 0)
+		(else (list '** b e))))
+
+(define (op_check op)
+  (lambda (x) (and (pair? x) (eq? (car x) op))))
+
+
+(define (length x)
+  (if (null? x)
+	0
+	(+ 1 (length (cdr x)))))
+
+(define (sub_expr op)
+  (lambda (x)
+	(if (= (length x) 3)
+	  (caddr x)
+	  (cons op (cddr x)))))
+
+(define sum? (op_check '+))
+(define product? (op_check '*))
+(define exponent? (op_check '**))
+
+(define addend cadr)
+(define augend (sub_expr '+))
+
+(define multiplier cadr)
+(define multiplicand (sub_expr '*))
+
+(define base cadr)
+(define exponent caddr)
+
+(define (derive expr var)
+  (cond
+	((number? expr) 0)
+    ((variable? expr)
+	 (if (same_variable? expr var) 1 0))
+	((sum? expr) 
+	 (make_sum (derive (addend expr) var)
+               (derive (augend expr) var)))
+	((product? expr)
+	 (make_sum
+	   (make_product (multiplier expr)
+					 (derive (multiplicand expr) var))
+	   (make_product (derive (multiplier expr) var)
+					 (multiplicand expr))))
+	((exponent? expr)
+	 (make_product (exponent expr)
+				   (make_exp (base expr) (- (exponent expr) 1))))
+	(else
+	  (error "unknown expression type -- DERIVE" expr))))
+
+
 (define (tests)
   (print (queens 8)))
 (tests)
