@@ -526,12 +526,25 @@
 		((and (number? v1) (number? v2)) (+ v1 v2))
 		(else (list '+ v1 v2))))
 
+(define (inf_make_sum v1 v2)
+  (cond ((=number? v1 0) v2)
+		((=number? v2 0) v1)
+		((and (number? v1) (number? v2)) (+ v1 v2))
+		(else (list v1 '+ v2))))
+
 (define (make_product v1 v2)
   (cond ((or (=number? v1 0) (=number? v2 0)) 0)
 		((=number? v1 1) v2)
 		((=number? v2 1) v1)
 		((and (number? v1) (number? v2)) (* v1 v2))
 		(else (list '* v1 v2))))
+
+(define (inf_make_product v1 v2)
+  (cond ((or (=number? v1 0) (=number? v2 0)) 0)
+		((=number? v1 1) v2)
+		((=number? v2 1) v1)
+		((and (number? v1) (number? v2)) (* v1 v2))
+		(else (list v1 '* v2))))
 
 (define (make_exp b e)
   (cond ((and (number? b) (number? e)) (expt b e))
@@ -540,8 +553,18 @@
 		((=number? b 0) 0)
 		(else (list '** b e))))
 
+(define (inf_make_exp b e)
+  (cond ((and (number? b) (number? e)) (expt b e))
+		((=number? e 0) 1)
+		((=number? e 1) b)
+		((=number? b 0) 0)
+		(else (list b '** e))))
+
 (define (op_check op)
   (lambda (x) (and (pair? x) (eq? (car x) op))))
+
+(define (inf_op_check op)
+  (lambda (x) (and (pair? x) (eq? (cadr x) op))))
 
 (define (sub_expr op)
   (lambda (x)
@@ -549,18 +572,34 @@
 	  (caddr x)
 	  (cons op (cddr x)))))
 
+(define (inf_sub_expr x)
+  (if (null? (cdddr x))
+	(caddr x)
+	(cddr x)))
+
 (define sum? (op_check '+))
 (define product? (op_check '*))
 (define exponent? (op_check '**))
 
+(define inf_sum? (inf_op_check '+))
+(define inf_product? (inf_op_check '*))
+(define inf_exponent? (inf_op_check '**))
+
 (define addend cadr)
 (define augend (sub_expr '+))
+
+(define inf_addend car)
 
 (define multiplier cadr)
 (define multiplicand (sub_expr '*))
 
+(define inf_multiplier car)
+
 (define base cadr)
 (define exponent caddr)
+
+(define inf_base car)
+(define inf_exponent caddr)
 
 (define (derive expr var)
   (cond
@@ -582,6 +621,25 @@
 	(else
 	  (error "unknown expression type -- DERIVE" expr))))
 
+(define (inf_derive expr var)
+  (cond
+	((number? expr) 0)
+    ((variable? expr)
+	 (if (same_variable? expr var) 1 0))
+	((inf_sum? expr) 
+	 (inf_make_sum (inf_derive (inf_addend expr) var)
+               (inf_derive (inf_sub_expr expr) var)))
+	((inf_product? expr)
+	 (inf_make_sum
+	   (inf_make_product (inf_multiplier expr)
+					 (inf_derive (inf_sub_expr expr) var))
+	   (inf_make_product (inf_derive (inf_multiplier expr) var)
+					 (inf_sub_expr expr))))
+	((inf_exponent? expr)
+	 (inf_make_product (inf_exponent expr)
+				   (inf_make_exponent (inf_base expr) (- (inf_exponent expr) 1))))
+	(else
+	  (error "unknown expression type -- DERIVE" expr))))
 
 (define (tests)
   (print (queens 8)))
