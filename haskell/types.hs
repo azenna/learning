@@ -1,12 +1,12 @@
-
 one :: a -> a -> a
 one x y = x
 
 two :: a -> a -> a
 two x y = y
 
-three:: a -> b -> b
+three :: a -> b -> b
 three a b = b
+
 i :: a -> a
 i a = a
 
@@ -35,8 +35,9 @@ sndString :: [Char] -> [Char]
 sndString x = x ++ " over the rainbow"
 
 sing = if (not $ x > y) then fstString x else sndString y
-    where x = "Sigin"
-          y = "Somewhere"
+  where
+    x = "Sigin"
+    y = "Somewhere"
 
 f :: Int -> String
 f = undefined
@@ -48,7 +49,9 @@ h :: Int -> Char
 h x = g $ f x
 
 data A
+
 data B
+
 data C
 
 q :: A -> B
@@ -69,15 +72,18 @@ bc = undefined
 xform :: (A, B) -> (C, C)
 xform (a, b) = (ac a, bc b)
 
-munge :: (x -> y)
-      -> (y -> (w, z))
-      -> x
-      -> w
+munge ::
+  (x -> y) ->
+  (y -> (w, z)) ->
+  x ->
+  w
 munge f g x = fst $ g $ f x
-main :: IO()
+
+main :: IO ()
 main = do
-    print $ 1 + 2
-    print 10
-    print (negate (-1))
-    print ((+) 0 blah)
-    where blah = negate 1
+  print $ 1 + 2
+  print 10
+  print (negate (-1))
+  print ((+) 0 blah)
+  where
+    blah = negate 1
