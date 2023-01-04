@@ -1,4 +1,5 @@
 import Data.List (elemIndex)
+import Control.Applicative
 
 t :: [(Int, Int)]
 t = zip [1..3] [4..6]
