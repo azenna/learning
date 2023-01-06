@@ -119,8 +119,50 @@ instance Applicative ZipList' where
 instance Arbitrary a => Arbitrary (ZipList' a) where
   arbitrary = ZipList' <$> (arbitrary :: Gen (List a))
     
+data V a b =
+    F a
+  | S b
+  deriving (Eq, Show)
 
+instance (Eq a, Eq b) => EqProp (V a b) where
+  (=-=) = eq
 
+instance (Arbitrary a, Arbitrary b) => Arbitrary (V a b) where
+  arbitrary = 
+    frequency [(1, S <$> arbitrary), (1, F <$> arbitrary)]
 
+instance Functor (V a) where
+  fmap _ (F a) = F a
+  fmap f (S b) = S $ f b
 
+instance Monoid a =>
+         Applicative (V a) where
 
+  pure = S
+
+  (<*>) (F a) (F b) = F $ a <> b
+  (<*>) (F a) _ = F a
+  (<*>) _ (F a) = F a
+  (<*>) (S f) (S a) = S $ f a
+
+data Three' a b = Three' a b b deriving (Eq, Show)
+
+instance (Eq a, Eq b) => EqProp (Three' a b) where
+  (=-=) = eq
+
+instance (Arbitrary a, Arbitrary b) =>
+          Arbitrary (Three' a b) where
+  arbitrary = liftA3 Three' arbitrary arbitrary arbitrary
+
+instance Functor (Three' a) where
+  fmap f (Three' a b c) = Three' a (f b) (f c)
+
+instance Monoid a => Applicative (Three' a) where
+  pure a = Three' mempty a a
+
+  (<*>) (Three' a b c) (Three' d e f) = Three' (a <> d) (b e) (c f)
+
+stops = "pbtdkg"
+vowels = "aeiou"
+
+combos = liftA3 (,,) stops vowels stops
