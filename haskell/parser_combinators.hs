@@ -1,5 +1,6 @@
 import Text.Trifecta
-import Text.Parser.Combinators (eof)
+import Text.Trifecta.Combinators
+import Text.Parsec.Prim ((<|>))
 
 stop :: Parser a
 stop = unexpected "stop"
@@ -13,6 +14,11 @@ oneTwo = char '1' >> char '2'
 oneTwo' = oneTwo >> stop
 
 oneTwoString = string "12"
+
+type SORI = Either String Int
+
+sori = (Left <$> some letter) <|> (Right <$> integer)
+
 
 testParse :: Parser Char -> IO ()
 testParse p =
