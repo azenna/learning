@@ -1,5 +1,6 @@
 import Control.Applicative
 import Data.Bifunctor
+import qualified Control.Monad.Trans.Reader as TR
 
 newtype EitherT e m a =
   EitherT { runEitherT :: m (Either e a)}
@@ -96,5 +97,20 @@ instance (Monad m) => Monad (MoiT s m) where
 
 embedded :: (EitherT String (ReaderT () IO)) Int
 embedded = (EitherT . ReaderT) (const . return $ Right 1)
+
+
+rDec :: Num a => TR.ReaderT a Maybe a
+rDec = TR.ReaderT $ Just . (subtract 1)
+
+rShow :: Show a => TR.ReaderT a Maybe String
+rShow = TR.ReaderT $ Just . show
+
+rPrintAndInc :: (Num a, Show a) => TR.ReaderT a IO a
+--I'm so cool
+rPrintAndInc = TR.ReaderT $ liftA2 (>>) (print) (return . (+1))
+
+sPrintIncAccum :: (Num a, Show a) => MoiT a IO String
+sPrintIncAccum = MoiT $ \s -> print s >> return (show s, s + 1)
+
 
 
