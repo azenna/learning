@@ -1,4 +1,5 @@
 import Control.Applicative
+import Data.Bifunctor
 
 newtype EitherT e m a =
   EitherT { runEitherT :: m (Either e a)}
@@ -74,5 +75,26 @@ instance Monad m => Monad (ReaderT r m) where
   (>>=) (ReaderT f) g = ReaderT $ \r ->
     (f r) >>= (flip $ runReaderT . g) r
 
+newtype MoiT s m a = 
+  MoiT { runMoiT :: s -> m (a, s) }
+
+instance (Functor m) => Functor (MoiT s m) where
+  fmap f (MoiT g) = MoiT $ fmap (first f) . g
+
+instance (Monad m) => Applicative (MoiT s m) where
+  pure a = MoiT $ \s -> pure (a, s)
+  
+  (<*>) :: MoiT s m (a -> b) -> MoiT s m a -> MoiT s m b
+  (<*>) (MoiT f) (MoiT g) = MoiT $ \s ->
+    (f s) >>= \(h, ns) -> fmap (first h) (g ns)
+
+instance (Monad m) => Monad (MoiT s m) where
+  return = pure
+
+  (MoiT f) >>= g = MoiT $ \s ->
+    (f s) >>= \(a, ns) -> runMoiT (g a) ns 
+
+embedded :: (EitherT String (ReaderT () IO)) Int
+embedded = (EitherT . ReaderT) (const . return $ Right 1)
 
 
