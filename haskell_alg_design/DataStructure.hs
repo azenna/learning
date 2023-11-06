@@ -1,7 +1,8 @@
-module Three where
+module DataStructure where
 
 import Data.List
 import Data.Tuple
+import Data.Array
 
 type SymList a = ([a], [a])
 
@@ -104,9 +105,19 @@ fetchT k (Node n t u)
   | otherwise = fetchT (k - m) u
   where m = (div n 2)
 
-data Digit a = Zero | One (Tree a)
+updateT :: (Int, a) -> Tree a -> Tree a 
+updateT (0, a) (Leaf _) = Leaf a
+updateT (k, a) (Node n t u)
+  |  k < m = Node n (updateT (k, a) t) u
+  | otherwise = Node n t (updateT (k - m, a) u)
+  where m = (div n 2)
+
+data Digit a = Zero | One (Tree a) deriving Show
 
 type RAList a = [Digit a]
+
+
+raNil = [Zero]
 
 fromRA :: RAList a -> [a]
 fromRA = (>>= go)
@@ -114,10 +125,24 @@ fromRA = (>>= go)
         go (One t) = fromT t
 
 fetchRA :: Int -> RAList a -> a
+fetchRA _ [] = error "index too large"
 fetchRA k (Zero : xs) = fetchRA k xs
 fetchRA k (One t : xs)
   | k < size t = fetchT k t
   | otherwise = fetchRA (k - size t) xs
+
+toRA :: [a] -> RAList a
+toRA = foldr consRA raNil
+
+updateRA :: (Int, a) -> RAList a -> RAList a
+updateRA _ [] = error "index too large"
+updateRA u (Zero : xs) = Zero : updateRA u xs
+updateRA (k, u) (One t : xs)
+  | k < size t = One (updateT (k, u) t) : xs
+  | otherwise = One t : updateRA (k, u) xs
+
+(//) :: RAList a -> [(Int, a)] -> RAList a
+(//) = foldr updateRA
 
 consRA :: a -> RAList a -> RAList a
 consRA x xs = go (Leaf x) xs
@@ -135,5 +160,19 @@ unconsRA xs = (x, ys)
       go (Zero : xs) = (x, One y : ys)
           where (Node _ x y, ys) = go xs
 
+headRA :: RAList a -> a
+headRA = fst . unconsRA
+
+tailRA :: RAList a -> a
+tailRA = fst . unconsRA
+
+factorial 0 = 0
+factorial 1 = 1
+factorial n = n * factorial (n - 1)
+
+fa n = listArray (0, n - 1) (map factorial [0..n])
+
+accumArray' f e i as = 
+    accum f (array i [(i, e) | i <- range i]) as
 inits' :: [a] -> [[a]]
 inits' = scanl (\x y -> x ++ [y]) []
