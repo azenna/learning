@@ -1,0 +1,10 @@
+2 not found
+2 inserted into the array
+17 not found
+17 inserted into the array
+12 not found
+12 inserted into the array
+6 found at position 3
+9 not found
+9 inserted into the array
+The array with all the elements inserted are: 1 2 3 6 8 9 10 12 17 
