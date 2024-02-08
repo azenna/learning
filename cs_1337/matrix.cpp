@@ -35,9 +35,9 @@ void printRow(double v[COL]) {
 
 // Prints an entire matrix using printRow on each row of matrix
 void printMatrix(double m[ROW][COL]) {
-  for(int i = 0; i < ROW; i++){
-      cout << endl;
-      printRow(m[i]);
+  for (int i = 0; i < ROW; i++) {
+    cout << endl;
+    printRow(m[i]);
   }
   cout << endl << endl;
 }
@@ -65,7 +65,7 @@ void printResult(double m1[ROW][COL], double m2[ROW][COL], double m3[ROW][COL],
   }
 }
 
-// Program to randomly generate two matrixes based on seed value 
+// Program to randomly generate two matrixes based on seed value
 // and add together
 // Pseudocode:
 //
@@ -89,7 +89,7 @@ int main() {
   srand(seed);
 
   double matrix1[ROW][COL], matrix2[ROW][COL], matrix3[ROW][COL];
-    
+
   popMatrix(matrix1);
   popMatrix(matrix2);
 
