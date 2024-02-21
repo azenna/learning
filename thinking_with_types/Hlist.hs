@@ -10,6 +10,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 import Data.Kind (Constraint, Type)
+import Data.Foldable
 
 data HList (ts :: [*]) where
   HNil :: HList '[]
