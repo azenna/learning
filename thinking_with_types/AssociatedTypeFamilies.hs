@@ -7,6 +7,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module AssociatedTypeFamilies where
 
@@ -21,13 +22,24 @@ infixr 5 :<<
 
 class HasPrintf a where
   type Printf a :: Type
+  format :: String
+        -> Printf a
 
-instance HasPrintf (text :: Symbol) where
+instance KnownSymbol text => HasPrintf (text :: Symbol) where
   type Printf text = String
+  format s = s <> symbolVal (Proxy @text)
 
-instance HasPrintf a => HasPrintf ((text :: Symbol) :<< a) where
+instance (KnownSymbol text, HasPrintf a) => HasPrintf ((text :: Symbol) :<< a) where
   type Printf (text :<< a) = Printf a
+  format s = format @a (s <> symbolVal (Proxy @text))
 
-instance HasPrintf a => HasPrintf ((param :: Type) :<< a) where
+instance (HasPrintf a, Show param) => HasPrintf ((param :: Type) :<< a) where
   type Printf (param :<< a) = param -> Printf a
+  format s param = format @a (s <> show param)
 
+instance {-# OVERLAPPING #-} HasPrintf a => HasPrintf (String :<< a) where
+  type Printf (String :<< a) = String -> Printf a
+  format s param = format @a (s <> param)
+
+printf :: forall a. HasPrintf a => Printf a
+printf = format @a ""

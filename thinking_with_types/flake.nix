@@ -1,17 +1,23 @@
 {
-  description = "Thinking with types flake";
-
+  description = "Simple haskell nix flake";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
-
-  outputs = { self, nixpkgs }:
-    let
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    in
-    {
-      devShells.x86_64-linux.default = pkgs.mkShell {
-        buildInputs = [ pkgs.ghc pkgs.cabal-install pkgs.haskell-language-server ];
-      };
-    };
+  outputs = { flake-utils, nixpkgs, self }:
+    flake-utils.lib.eachDefaultSystem (system: 
+      let
+        pkgs = import nixpkgs { inherit system;};
+      in 
+        {
+          devShell = pkgs.mkShell {
+            buildInputs = [
+              (pkgs.haskellPackages.ghcWithPackages (pkgs: [
+                pkgs.vector
+                pkgs.first-class-families
+                pkgs.aeson
+              ]))
+            ];
+          };
+        });
 }

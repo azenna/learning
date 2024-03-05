@@ -1,0 +1,4 @@
+A001 Apples 1 0.90 21
+A002 	 Peaches 1 0.82 11   &^  	
+A009 Strawberries_Case 0 12.50 8 
+4261 Rice_1_LB_Bag 0 0.49 107
