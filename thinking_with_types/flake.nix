@@ -14,13 +14,16 @@
     in {
       devShell = pkgs.mkShell {
         buildInputs = [
-          (pkgs.haskellPackages.ghcWithPackages (pkgs: [
-            pkgs.vector
-            pkgs.first-class-families
-            pkgs.aeson
-            pkgs.aeson-pretty
-            pkgs.inspection-testing
-          ]))
+          (pkgs.haskellPackages.ghcWithPackages (pkgs:
+            with pkgs; [
+              vector
+              first-class-families
+              aeson
+              aeson-pretty
+              inspection-testing
+              indexed
+              do-notation
+            ]))
         ];
       };
     });
