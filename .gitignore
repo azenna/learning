@@ -1,6 +1,8 @@
-*/target/
-*/_build/
+**/target/
+**/_build/
+**/__pycache__/
 */Example/
 *.out
 *.o
 *.txt
+*.exe
