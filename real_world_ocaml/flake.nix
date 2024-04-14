@@ -20,7 +20,6 @@
           pkgs.dune_3
           pkgs.ocamlPackages.utop
           pkgs.ocamlPackages.base
-          pkgs.ocamlPackages.ounit2
         ];
       };
     });
