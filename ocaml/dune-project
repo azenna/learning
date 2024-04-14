@@ -1,0 +1,7 @@
+(lang dune 3.14)
+
+(name real_world_ocaml)
+
+(package
+ (name real_world_ocaml)
+ (depends ocaml dune))
